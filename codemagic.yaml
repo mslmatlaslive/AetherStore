@@ -12,13 +12,19 @@ workflows:
           cd app-store-mirror-main
           npm install
           npm run build
-      - name: Setup Capacitor and Build APK
+      - name: Clean Setup and Build APK
         script: |
           cd app-store-mirror-main
+          # Eski çakışabilecek android klasörünü ve config dosyalarını temizle
+          rm -rf android capacitor.config.json capacitor.config.ts
+          
+          # Paketleri kur ve capacitor'ü sıfırdan başlat
           npm install @capacitor/core @capacitor/cli @capacitor/android
           npx cap init AetherOS com.aether.os --web-dir dist
           npx cap add android
           npx cap copy android
+          
+          # Gradle derlemesini çalıştır
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
