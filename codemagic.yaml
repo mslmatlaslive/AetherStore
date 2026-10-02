@@ -15,10 +15,9 @@ workflows:
       - name: Setup Capacitor and Build APK
         script: |
           cd app-store-mirror-main
-          # Capacitor'u projelendirme ve paket adı ayarlama
           npm install @capacitor/core @capacitor/cli @capacitor/android
-          npx cap init AetherOS com.aether.os --web-dir dist --yes
-          npx cap add android --yes
+          npx cap init AetherOS com.aether.os --web-dir dist
+          npx cap add android
           npx cap copy android
           cd android
           chmod +x gradlew
