@@ -1,14 +1,25 @@
 workflows:
   android-workflow:
     name: AetherOS Android Build
+    max_build_duration: 30
     environment:
       node: v20
+      java: 17
     scripts:
-      - name: Extract project and build web
+      - name: Extract and Build Web
         script: |
           unzip -q app-store-mirror-main.zip
           cd app-store-mirror-main
           npm install
           npm run build
+      - name: Setup Capacitor and Build APK
+        script: |
+          cd app-store-mirror-main
+          npx cap init AetherOS com.aether.os --web-dir dist
+          npx cap add android
+          npx cap copy android
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
     artifacts:
-      - app-store-mirror-main/dist/**/*
+      - app-store-mirror-main/android/app/build/outputs/apk/debug/*.apk
