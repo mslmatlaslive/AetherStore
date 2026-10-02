@@ -9,39 +9,20 @@ workflows:
       - name: Extract and Build Web
         script: |
           unzip -q app-store-mirror-main.zip
-          cd app-store-mirror-main
+          # Klasör adıyla uğraşmamak için içindeki ilk dizine otomatik gir
+          cd $(ls -d */ | head -n 1)
           npm install
           npm run build
       - name: Clean Setup and Build APK
         script: |
-          cd app-store-mirror-main
-          
-          # Her şeyi tertemiz yap
+          cd $(ls -d */ | head -n 1)
           rm -rf android capacitor.config.json capacitor.config.ts
-          
-          # Paketleri kur
           npm install @capacitor/core @capacitor/cli @capacitor/android
-          
-          # Capacitor'ü başlat
           npx cap init AetherOS com.aether.os --web-dir dist
-          
-          # Android platformunu sıfırdan ekle
           npx cap add android
-          
-          # Web dosyalarını android içine kopyala (dist klasörünü kontrol ederek)
-          if [ -d "dist" ]; then
-            npx cap copy android
-          elif [ -d "build" ]; then
-            mv build dist
-            npx cap copy android
-          else
-            echo "Web build klasörü bulunamadı!"
-            exit 1
-          fi
-          
-          # Gradle derlemesi
+          npx cap copy android
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
     artifacts:
-      - app-store-mirror-main/android/app/build/outputs/apk/debug/*.apk
+      - "**/build/outputs/apk/debug/*.apk"
