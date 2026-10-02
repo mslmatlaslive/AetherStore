@@ -1,0 +1,14 @@
+workflows:
+  android-workflow:
+    name: AetherOS Android Build
+    environment:
+      node: v20
+    scripts:
+      - name: Extract project and build web
+        script: |
+          unzip -q app-store-mirror-main.zip
+          cd app-store-mirror-main
+          npm install
+          npm run build
+    artifacts:
+      - app-store-mirror-main/dist/**/*
