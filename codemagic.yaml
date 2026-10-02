@@ -4,4 +4,27 @@ workflows:
     max_build_duration: 30
     environment:
       node: v20
-      java: 21   # Java sürümünü 17 yerine 21 yapıyoruz!
+      java: 21
+    scripts:
+      - name: Extract and Build Web
+        script: |
+          unzip -q app-store-mirror-main.zip
+          cd $(ls -d */ | head -n 1)
+          npm install
+          npm run build
+      - name: Setup Capacitor and Build APK
+        script: |
+          cd $(ls -d */ | head -n 1)
+          rm -rf android
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npx cap init AetherOS com.aether.os --web-dir dist
+          if [ ! -d "dist" ] && [ -d "build" ]; then
+            mv build dist
+          fi
+          npx cap add android
+          npx cap sync android
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+    artifacts:
+      - "**/build/outputs/apk/debug/*.apk"
