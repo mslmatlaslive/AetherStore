@@ -4,44 +4,4 @@ workflows:
     max_build_duration: 30
     environment:
       node: v20
-      java: 17
-    scripts:
-      - name: Extract and Build Web
-        script: |
-          unzip -q app-store-mirror-main.zip
-          cd $(ls -d */ | head -n 1)
-          npm install
-          npm run build
-      - name: Clean Setup and Build APK
-        script: |
-          cd $(ls -d */ | head -n 1)
-          
-          # Mevcut android vecapacitor artıklarını temizle
-          rm -rf android capacitor.config.json capacitor.config.ts
-          
-          # Capacitor paketlerini kur
-          npm install @capacitor/core @capacitor/cli @capacitor/android
-          
-          # Capacitor'ü başlat (web klasörünü dist olarak göster)
-          npx cap init AetherOS com.aether.os --web-dir dist
-          
-          # Eğer Vite çıktısı 'dist' değil de başka bir adadaysa dist'e taşıy garantíası
-          if [ ! -d "dist" ] && [ -d "build" ]; then
-            mv build dist
-          elif [ ! -d "dist" ]; then
-            mkdir dist
-            echo "<h1>AetherStore</h1>" > dist/index.html
-          fi
-          
-          # Android platformunu ekle
-          npx cap add android
-          
-          # Dosyaları senkronize et
-          npx cap sync android
-          
-          # Gradle ile derle
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleDebug
-    artifacts:
-      - "**/build/outputs/apk/debug/*.apk"
+      java: 21   # Java sürümünü 17 yerine 21 yapıyoruz!
